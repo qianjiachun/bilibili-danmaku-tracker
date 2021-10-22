@@ -7,10 +7,12 @@
 // @author       小淳
 // @match        *://www.bilibili.com/video/*
 // @grant        unsafeWindow
+// @require      https://cdn.jsdelivr.net/npm/protobufjs@6.10.2/dist/protobuf.min.js
 // ==/UserScript==
 
 function init() {
-    initPkg_SelectDanmaku();
+	initPkg_CollectAllDanmaku();
+    initPkg_Main();
 }
 
 function initStyles() {
@@ -22,5 +24,11 @@ function initStyles() {
 // 编译器标记 勿删
 
 (function() {
-    init();
+	let timer = setInterval(() => {
+		let dom = document.getElementById("danmukuBox");
+		if (dom) {
+			clearInterval(timer);
+			init();
+		}
+	}, 500);
 })();

@@ -7,10 +7,12 @@
 // @author       小淳
 // @match        *://www.bilibili.com/video/*
 // @grant        unsafeWindow
+// @require      https://cdn.jsdelivr.net/npm/protobufjs@6.10.2/dist/protobuf.min.js
 // ==/UserScript==
 
 function init() {
-    initPkg_SelectDanmaku();
+	initPkg_CollectAllDanmaku();
+    initPkg_Main();
 }
 
 function initStyles() {
@@ -19,18 +21,100 @@ function initStyles() {
 	document.head.appendChild(style);
 }
 
-let cid = unsafeWindow.cid;
+let cid = unsafeWindow.cid
+let allDanmaku = {}
 
-function initPkg_SelectDanmaku() {
-    initPkg_SelectDanmaku_Dom();
-    initPkg_SelectDanmaku_Func();
+function formatSeconds(value) {
+	var secondTime = parseInt(value / 1000); // 秒
+	var minuteTime = 0; // 分
+	if (secondTime > 60) {
+		minuteTime = parseInt(secondTime / 60);
+		secondTime = parseInt(secondTime % 60);
+	}
+	var result ="" +(parseInt(secondTime) < 10? "0" + parseInt(secondTime): parseInt(secondTime));
+
+	// if (minuteTime > 0) {
+		result ="" + (parseInt(minuteTime) < 10? "0" + parseInt(minuteTime) : parseInt(minuteTime)) + ":" + result;
+	// }
+	return result;
+}
+function initPkg_CollectAllDanmaku() {
+    initPkg_CollectAllDanmaku_Dom();
+    initPkg_CollectAllDanmaku_Func();
 }
 
-function initPkg_SelectDanmaku_Dom() {
+function initPkg_CollectAllDanmaku_Dom() {
+}  
+
+function initPkg_CollectAllDanmaku_Func() {
+    allDanmaku = {};
+    collectAllDanmaku(1);
+}
+
+function collectAllDanmaku(page) {
+    fetch(
+        `https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid=${cid}&segment_index=${page}`
+    ).then(response => {
+        return response.arrayBuffer();
+    }).then(ret => {
+        let data = new Uint8Array(ret);
+        let protoStr = `
+        syntax = "proto3";
+
+        package dm;
+        
+        message dmList{
+            repeated dmItem list=1;
+        }
+        message dmItem{
+            int64 id = 1;
+            int32 progress = 2;
+            int32 mode = 3;
+            int32 fontsize = 4;
+            uint32 color = 5;
+            string midHash = 6;
+            string content = 7;
+            int64 ctime = 8;
+            int32 weight = 9;
+            string action = 10;
+            int32 pool = 11;
+            string idStr = 12;
+        }`;
+        protobuf.loadFromString("dm", protoStr).then(root => {
+            let dmList = root.lookupType("dm.dmList").decode(data);
+            handleDanmakuList(dmList.list);
+        })
+        if (ret.byteLength > 0) {
+            collectAllDanmaku(page + 1);
+        }
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
+function handleDanmakuList(list) {
+    for (let i = 0; i < list.length; i++) {
+        let item = list[i];
+        let content = item.content;
+        let progress = "progress" in item ? item.progress : "0";
+        let keyName = `${content}|${formatSeconds(progress)}`;
+        if (keyName in allDanmaku) {
+            allDanmaku[keyName].push(item.midHash);
+        } else {
+            allDanmaku[keyName] = [item.midHash];
+        }
+    }
+}
+function initPkg_Main() {
+    initPkg_Main_Dom();
+    initPkg_Main_Func();
+}
+
+function initPkg_Main_Dom() {
     
 }
 
-function initPkg_SelectDanmaku_Func() {
+function initPkg_Main_Func() {
     document.addEventListener("click", (e) => {
         let isVideoDm = false;
         for (let i = 0; i < e.path.length; i++) {
@@ -43,19 +127,26 @@ function initPkg_SelectDanmaku_Func() {
 
         let domRight = document.querySelector(".danmaku-info-row.bpui-selected");
         if (isVideoDm) {
-            console.log("我点了视频区的弹幕", e)
             setTimeout(() => {
-               console.log(document.querySelector(".danmaku-info-row.bpui-selected")) 
-            }, timeout);
+                showSelectedInfo(document.querySelector(".danmaku-info-row.bpui-selected"));
+            }, 0);
         }
         if (domRight && e.target.className === "danmaku-info-danmaku") {
-            console.log("嘻嘻", domRight, e)
+            showSelectedInfo(domRight);
         }
     })
-    // let hook = new DomHook(".player-auxiliary-area.relative", true, (m) => {
-    //     console.log(m);
-    // })
-    // console.log(hook);
+}
+
+function showSelectedInfo(dom) {
+    let progress = dom.getElementsByClassName("danmaku-info-time")[0].innerText;
+    let content = dom.getElementsByClassName("danmaku-info-danmaku")[0].innerText;
+    let keyName = `${content}|${progress}`;
+    if (keyName in allDanmaku) {
+        for (let i = 0; i < allDanmaku[keyName].length; i++) {
+            let uhash = allDanmaku[keyName][i];
+            console.log(uhash2uid(uhash));
+        }
+    }
 }
 function make_crc32_cracker() {
     var POLY = 0xedb88320;
@@ -162,26 +253,22 @@ function uhash2uid(uidhash, max_digit = 10) {
     _crc32_cracker = _crc32_cracker || make_crc32_cracker();
     return _crc32_cracker.crack(parseInt(uidhash, 16), max_digit);
 }
-class DomHook {
-    constructor(selector, isSubtree, callback) {
-        this.selector = selector;
-        this.isSubtree = isSubtree;
-        let targetNode = document.querySelector(this.selector);
-        if (targetNode == null) {
-            return;
-        }
-        let observer = new MutationObserver(function(mutations) {
-            callback(mutations);
-        });
-        this.observer = observer;
-        this.observer.observe(targetNode, { attributes: true, childList: true, subtree: this.isSubtree });
-    }
-    closeHook() {
-        this.observer.disconnect();
-    }
-}
+protobuf.loadFromString = (name, protoStr) => {
+    const Root = protobuf.Root;
+    const fetchFunc = Root.prototype.fetch;
+    Root.prototype.fetch = (_, cb) => cb(null, protoStr);
+    const root = new Root().load(name);
+    Root.prototype.fetch = fetchFunc;
+    return root;
+};
 
 
 (function() {
-    init();
+	let timer = setInterval(() => {
+		let dom = document.getElementById("danmukuBox");
+		if (dom) {
+			clearInterval(timer);
+			init();
+		}
+	}, 500);
 })();
