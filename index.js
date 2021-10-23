@@ -9,6 +9,7 @@
 // @grant        unsafeWindow
 // @grant        GM_xmlhttpRequest
 // @require      https://cdn.jsdelivr.net/npm/protobufjs@6.10.2/dist/protobuf.min.js
+// @connect      bilibili.com
 // ==/UserScript==
 
 function init() {
@@ -127,8 +128,9 @@ function initPkg_Main_Func() {
     let selectedDom = null;
     document.addEventListener("click", (e) => {
         let isVideoDm = false;
-        for (let i = 0; i < e.path.length; i++) {
-            let item = e.path[i];
+        path = e.path || (e.composedPath && e.composedPath());
+        for (let i = 0; i < path.length; i++) {
+            let item = path[i];
             if (item.className && item.className.indexOf("context-menu-a") !== -1) {
                 isVideoDm = true;
                 break;

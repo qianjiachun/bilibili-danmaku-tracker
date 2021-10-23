@@ -9,6 +9,7 @@
 // @grant        unsafeWindow
 // @grant        GM_xmlhttpRequest
 // @require      https://cdn.jsdelivr.net/npm/protobufjs@6.10.2/dist/protobuf.min.js
+// @connect      bilibili.com
 // ==/UserScript==
 
 function init() {
