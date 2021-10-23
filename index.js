@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2021.10.23.02
+// @version      2021.10.23.03
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳
 // @match        *://www.bilibili.com/video/*
@@ -126,28 +126,9 @@ function initPkg_Main_Dom() {
 
 function initPkg_Main_Func() {
     let selectedDom = null;
-    document.addEventListener("click", (e) => {
-        let isVideoDm = false;
-        path = e.path || (e.composedPath && e.composedPath());
-        for (let i = 0; i < path.length; i++) {
-            let item = path[i];
-            if (item.className && item.className.indexOf("context-menu-a") !== -1) {
-                isVideoDm = true;
-                break;
-            }
-        }
-
-        let domRight = document.querySelector(".danmaku-info-row.bpui-selected");
-        if (isVideoDm) {
-            setTimeout(() => {
-                selectedDom = document.querySelector(".danmaku-info-row.bpui-selected");
-            }, 0);
-        }
-        if (domRight && e.target.className === "danmaku-info-danmaku") {
-            selectedDom = domRight;
-        }
-    });
     document.addEventListener("contextmenu", (e) => {
+        let path = e.path || (e.composedPath && e.composedPath());
+        selectedDom = getSelectedDom(path);
         let dom = document.querySelector(".player-auxiliary-context-menu-container");
         if (dom) {
             if (dom.querySelector("#query-sender")) {
@@ -171,6 +152,17 @@ function initPkg_Main_Func() {
             })
         }
     })
+}
+
+function getSelectedDom(path) {
+    let ret = null;
+    for (let i = 0; i < path.length; i++) {
+        if (path[i].className && path[i].className.indexOf("danmaku-info-row") !== -1) {
+            ret = path[i];
+            break;
+        }
+    }
+    return ret;
 }
 
 function showSelectedInfo(dom) {

@@ -9,28 +9,9 @@ function initPkg_Main_Dom() {
 
 function initPkg_Main_Func() {
     let selectedDom = null;
-    document.addEventListener("click", (e) => {
-        let isVideoDm = false;
-        path = e.path || (e.composedPath && e.composedPath());
-        for (let i = 0; i < path.length; i++) {
-            let item = path[i];
-            if (item.className && item.className.indexOf("context-menu-a") !== -1) {
-                isVideoDm = true;
-                break;
-            }
-        }
-
-        let domRight = document.querySelector(".danmaku-info-row.bpui-selected");
-        if (isVideoDm) {
-            setTimeout(() => {
-                selectedDom = document.querySelector(".danmaku-info-row.bpui-selected");
-            }, 0);
-        }
-        if (domRight && e.target.className === "danmaku-info-danmaku") {
-            selectedDom = domRight;
-        }
-    });
     document.addEventListener("contextmenu", (e) => {
+        let path = e.path || (e.composedPath && e.composedPath());
+        selectedDom = getSelectedDom(path);
         let dom = document.querySelector(".player-auxiliary-context-menu-container");
         if (dom) {
             if (dom.querySelector("#query-sender")) {
@@ -54,6 +35,17 @@ function initPkg_Main_Func() {
             })
         }
     })
+}
+
+function getSelectedDom(path) {
+    let ret = null;
+    for (let i = 0; i < path.length; i++) {
+        if (path[i].className && path[i].className.indexOf("danmaku-info-row") !== -1) {
+            ret = path[i];
+            break;
+        }
+    }
+    return ret;
 }
 
 function showSelectedInfo(dom) {
