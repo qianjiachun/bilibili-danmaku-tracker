@@ -1,4 +1,3 @@
-let cid = unsafeWindow.cid
 let allDanmaku = {}
 
 function formatSeconds(value) {
@@ -14,4 +13,9 @@ function formatSeconds(value) {
 		result ="" + (parseInt(minuteTime) < 10? "0" + parseInt(minuteTime) : parseInt(minuteTime)) + ":" + result;
 	// }
 	return result;
+}
+
+function getStrMiddle(str, before, after) {
+	let m = str.match(new RegExp(before + '(.*?)' + after));
+	return m ? m[1] : false;
 }

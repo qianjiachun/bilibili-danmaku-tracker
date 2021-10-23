@@ -39,7 +39,7 @@ function collectAllDanmaku(page) {
         return;
     }
     fetch(
-        `https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid=${cid}&segment_index=${page}`
+        `https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid=${unsafeWindow.cid}&segment_index=${page}`
     ).then(response => {
         return response.arrayBuffer();
     }).then(ret => {
