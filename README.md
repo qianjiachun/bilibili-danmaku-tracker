@@ -1,5 +1,19 @@
 ## Bilibili弹幕查询发送者
 
+### 发布页
+1. [greasyfork发布页](https://greasyfork.org/zh-CN/scripts/434334)
+
+### 运行环境
+1. 现代浏览器（推荐Edge、Chrome），请不要使用IE
+2. 在浏览器上安装Tampermonkey（油猴）扩展
+
+### 安装方法
+1. [安装油猴脚本【官方】](https://www.tampermonkey.net/)
+  - 如果chrome被墙 => [安装油猴脚本【chrome被墙】](https://www.crx4chrome.com/crx/1429/)
+  - 选择【Download crx file from crx4chrome】，然后打开浏览器的扩展页面，开启开发者模式，将下载后的文件拖入浏览器进行安装。安装有问题可以[百度如何安装油猴脚本](https://www.baidu.com/s?wd=%E5%A6%82%E4%BD%95%E5%AE%89%E8%A3%85tampermonkey)
+2. 在[greasyfork发布页](https://greasyfork.org/zh-CN/scripts/434334)安装插件
+3. 安装完成
+
 ### 使用方法
 1. 在右侧弹幕列表框中右键一条弹幕
 2. 点击查看发送者
