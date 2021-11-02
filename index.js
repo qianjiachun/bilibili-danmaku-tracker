@@ -2,10 +2,12 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2021.10.23.03
+// @version      2021.11.02.01
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳
 // @match        *://www.bilibili.com/video/*
+// @match        *://www.bilibili.com/bangumi/play/*
+// @match        *://www.bilibili.com/cheese/play/*
 // @grant        unsafeWindow
 // @grant        GM_xmlhttpRequest
 // @require      https://cdn.jsdelivr.net/npm/protobufjs@6.10.2/dist/protobuf.min.js
@@ -13,17 +15,21 @@
 // ==/UserScript==
 
 function init() {
-	initPkg_CollectAllDanmaku();
-	initPkg_Main();
+	init_Router();
 }
 
 function initStyles() {
 	let style = document.createElement("style");
-	style.appendChild(document.createTextNode(`.senderinfo__wrap {    width: 280px;    z-index: 1;    background-color: white;    border-radius: 8px;    box-shadow: 0 0 30px 2px rgb(0 0 0 / 10%);    position: absolute;    left: 50%;    top: 50%;    transform: translate(-50%, -50%);    max-height: 300px;    box-sizing: border-box;    padding: 5px;    overflow: auto;}.senderinfo__card {    margin-bottom: 5px;    margin-top: 5px;}.senderinfo__close {    margin-right: 5px;    margin-top: 5px;    cursor: pointer;    position: absolute;    margin-left: 260px;    margin-top: 0px;}.senderinfo__avatar {    width: 100%;    height: 70px;    overflow: hidden;    text-align: center;}.senderinfo__img-loding {    width: 70px;    height: 70px;    border-radius: 50%;    background-color: rgb(225,232,238);    display: inline-block;}.senderinfo__avatar img {    width: 70px;    height: 70px;    border-radius: 50%;}.senderinfo__user {    text-align: center;    margin-top: 10px;}.senderinfo__name {    font-size: 16px;    font-weight: bold;}.senderinfo__name-loading {    width: 100px;    height: 16px;    background-color: rgb(225,232,238);    display: inline-block;}.senderinfo__level {    line-height: 17px;    margin-left: 5px;    position: absolute;    color: #99a2aa;}.senderinfo__sign {    color: #99a2aa;    word-break: break-all;    word-wrap: break-word;    margin-top: 10px;    text-align: center;}.senderinfo__sign-loading {    width: 150px;    height: 16px;    background-color: rgb(225,232,238);    display: inline-block;}.senderinfo__wrap::-webkit-scrollbar {    width: 4px;    }.senderinfo__wrap::-webkit-scrollbar-thumb {    border-radius: 10px;    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);    background: rgba(0,0,0,0.2);}.senderinfo__wrap::-webkit-scrollbar-track {    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);    border-radius: 0;    background: rgba(0,0,0,0.1);}`));
+	style.appendChild(document.createTextNode(`.senderinfo__wrap {    width: 280px;    z-index: 1;    background-color: white;    border-radius: 8px;    box-shadow: 0 0 30px 2px rgb(0 0 0 / 10%);    position: absolute;    left: 50%;    top: 50%;    transform: translate(-50%, -50%);    max-height: 300px;    box-sizing: border-box;    padding: 5px;    overflow: auto;}.senderinfo__card {    margin-bottom: 5px;    margin-top: 5px;}.senderinfo__close {    margin-right: 5px;    margin-top: 5px;    cursor: pointer;    position: absolute;    margin-left: 260px;    margin-top: 0px;}.senderinfo__avatar {    width: 100%;    height: 70px;    overflow: hidden;    text-align: center;}.senderinfo__img-loding {    width: 70px;    height: 70px;    border-radius: 50%;    background-color: rgb(225,232,238);    display: inline-block;}.senderinfo__avatar img {    width: 70px;    height: 70px;    border-radius: 50%;}.senderinfo__user {    text-align: center;    margin-top: 10px;}.senderinfo__name {    font-size: 16px;    font-weight: bold;    color: black;}.senderinfo__name-loading {    width: 100px;    height: 16px;    background-color: rgb(225,232,238);    display: inline-block;}.senderinfo__level {    line-height: 17px;    margin-left: 5px;    position: absolute;    color: #99a2aa;}.senderinfo__sign {    color: #99a2aa;    word-break: break-all;    word-wrap: break-word;    margin-top: 10px;    text-align: center;    line-height: 12px;}.senderinfo__sign-loading {    width: 150px;    height: 16px;    background-color: rgb(225,232,238);    display: inline-block;}.senderinfo__wrap::-webkit-scrollbar {    width: 4px;    }.senderinfo__wrap::-webkit-scrollbar-thumb {    border-radius: 10px;    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);    background: rgba(0,0,0,0.2);}.senderinfo__wrap::-webkit-scrollbar-track {    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);    border-radius: 0;    background: rgba(0,0,0,0.1);}`));
 	document.head.appendChild(style);
 }
 
 let allDanmaku = {}
+
+const DOM_MENU_MAIN = ".player-auxiliary-context-menu-container"
+const DOM_MENU_BANGUMI = ".bpx-player-active"
+const DOM_MENU_CHEESE = ".bpx-player-active"
+
 
 function formatSeconds(value) {
 	var secondTime = parseInt(value / 1000); // 秒
@@ -66,6 +72,9 @@ message dmItem{
     int32 pool = 11;
     string idStr = 12;
 }`;
+let videoCid = "";
+
+
 function initPkg_CollectAllDanmaku() {
     initPkg_CollectAllDanmaku_Dom();
     initPkg_CollectAllDanmaku_Func();
@@ -85,7 +94,7 @@ function collectAllDanmaku(page) {
         return;
     }
     fetch(
-        `https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid=${unsafeWindow.cid}&segment_index=${page}`
+        `https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid=${videoCid}&segment_index=${page}`
     ).then(response => {
         return response.arrayBuffer();
     }).then(ret => {
@@ -115,6 +124,31 @@ function handleDanmakuList(list) {
         }
     }
 }
+
+function refreshAllDanmaku() {
+    let route = getRoute();
+    switch (route) {
+        case 0:
+            // 在普通页面
+            videoCid = getVideoCid_Main();
+            initPkg_CollectAllDanmaku();
+            break;
+        case 1:
+            // 在番剧页面
+            videoCid = getVideoCid_Bangumi();
+            initPkg_CollectAllDanmaku();
+            break;
+        case 2:
+            // 在课程页面
+            videoCid = getVideoCid_Cheese();
+            initPkg_CollectAllDanmaku();
+            break;
+        default:
+            videoCid = getVideoCid_Main();
+            initPkg_CollectAllDanmaku();
+            break;
+    }
+}
 function initPkg_Main() {
     initPkg_Main_Dom();
     initPkg_Main_Func();
@@ -126,38 +160,46 @@ function initPkg_Main_Dom() {
 
 function initPkg_Main_Func() {
     let selectedDom = null;
-    document.addEventListener("contextmenu", (e) => {
-        let path = e.path || (e.composedPath && e.composedPath());
-        selectedDom = getSelectedDom(path);
-        let dom = document.querySelector(".player-auxiliary-context-menu-container");
-        if (dom) {
-            if (dom.querySelector("#query-sender")) {
-                return;
-            }
-            let ul = dom.querySelector("ul");
-            let li = document.createElement("li");
-            li.id = "query-sender";
-            li.className = "context-line context-menu-function";
-            li.innerHTML = `
-            <a class="context-menu-a js-action" href="javascript:void(0);" data-disabled="0">
-                查看发送者
-            </a>`;
-            ul.appendChild(li);
-
-            li.addEventListener("click", () => {
-                if (selectedDom) {
-                    renderSenderInfoWrap();
-                    showSelectedInfo(selectedDom);
+    document.getElementById("danmukuBox").addEventListener("contextmenu", (e) => {
+        setTimeout(() => {
+            let path = e.path || (e.composedPath && e.composedPath());
+            selectedDom = getSelectedDom(path);
+            let dom = document.querySelector(DOM_MENU_MAIN) || document.querySelector(DOM_MENU_BANGUMI) || document.querySelector(DOM_MENU_CHEESE);
+            if (dom) {
+                if (dom.querySelector("#query-sender")) {
+                    return;
                 }
-            })
-        }
-    })
+                removeSenderInfoWrap();
+                
+                let ul = dom.querySelector("ul");
+                let li = document.createElement("li");
+                li.id = "query-sender";
+                li.className = "context-line context-menu-function";
+                li.innerHTML = `
+                <a style="color:#444" class="context-menu-a js-action" href="javascript:void(0);" data-disabled="0">
+                    查看发送者
+                </a>`;
+                if (ul) {
+                    ul.appendChild(li);
+                } else {
+                    dom.appendChild(li);
+                }
+
+                li.addEventListener("click", () => {
+                    if (selectedDom) {
+                        renderSenderInfoWrap();
+                        showSelectedInfo(selectedDom);
+                    }
+                })
+            }
+        }, 0);
+    }, true)
 }
 
 function getSelectedDom(path) {
     let ret = null;
     for (let i = 0; i < path.length; i++) {
-        if (path[i].className && path[i].className.indexOf("danmaku-info-row") !== -1) {
+        if (path[i].className && (path[i].className.includes("danmaku-info-row") || path[i].className.includes("dm-info-row"))) {
             ret = path[i];
             break;
         }
@@ -166,8 +208,10 @@ function getSelectedDom(path) {
 }
 
 function showSelectedInfo(dom) {
-    let progress = dom.getElementsByClassName("danmaku-info-time")[0].innerText;
-    let content = dom.getElementsByClassName("danmaku-info-danmaku")[0].innerText;
+    let domTime = dom.getElementsByClassName("danmaku-info-time")[0];
+    let domContent = dom.getElementsByClassName("danmaku-info-danmaku")[0];
+    let progress = domTime ? domTime.innerText :dom.getElementsByClassName("dm-info-time")[0].innerText;
+    let content = domContent ? domContent.innerText : dom.getElementsByClassName("dm-info-dm")[0].innerText;
     let keyName = `${content}|${progress}`;
     let uidList = [];
     if (keyName in allDanmaku) {
@@ -181,10 +225,7 @@ function showSelectedInfo(dom) {
 }
 
 function renderSenderInfoWrap() {
-    let domWrapList = document.getElementsByClassName("senderinfo__wrap");
-    if (domWrapList.length > 0) {
-        domWrapList[0].remove();
-    }
+    removeSenderInfoWrap();
     let div = document.createElement("div");
     div.className = "senderinfo__wrap";
     div.innerHTML = `
@@ -250,6 +291,17 @@ function renderSenderInfoCard(uidList) {
                 domCard.innerHTML += html;
             }
         });
+    }
+}
+
+function getVideoCid_Main() {
+    return String(unsafeWindow.cid);
+}
+
+function removeSenderInfoWrap() {
+    let domWrapList = document.getElementsByClassName("senderinfo__wrap");
+    if (domWrapList.length > 0) {
+        domWrapList[0].remove();
     }
 }
 function make_crc32_cracker() {
@@ -357,6 +409,20 @@ function uhash2uid(uidhash, max_digit = 10) {
     _crc32_cracker = _crc32_cracker || make_crc32_cracker();
     return _crc32_cracker.crack(parseInt(uidhash, 16), max_digit);
 }
+function getVideoCid_Bangumi() {
+    return String(unsafeWindow.__INITIAL_STATE__.epInfo.cid);
+}
+
+function getVideoCid_Cheese() {
+    let episodes = unsafeWindow.PlayerAgent.getEpisodes();
+    let _id = unsafeWindow.$('li.on.list-box-li').index();
+    return String(episodes[_id].cid);
+}
+
+function getVideoCid_Main() {
+    return String(unsafeWindow.cid);
+}
+
 protobuf.loadFromString = (name, protoStr) => {
     const Root = protobuf.Root;
     const fetchFunc = Root.prototype.fetch;
@@ -365,6 +431,24 @@ protobuf.loadFromString = (name, protoStr) => {
     Root.prototype.fetch = fetchFunc;
     return root;
 };
+function init_Router() {
+    refreshAllDanmaku();
+    initPkg_Main();
+}
+
+function getRoute() {
+    // 规定 0是默认页面 1是番剧bangumi页面 2是cheese课程页面
+    let ret = 0;
+    let url = String(location.href);
+    if (url.includes("bangumi/play")) {
+        // 在番剧页面
+        ret = 1;
+    } else if (url.includes("cheese/play")) {
+        // 在课程页面
+        ret = 2;
+    }
+    return ret;
+}
 
 const _historyWrap = function (type) {
 	const orig = history[type];
@@ -379,12 +463,12 @@ const _historyWrap = function (type) {
 history.pushState = _historyWrap('pushState');
 history.replaceState = _historyWrap('replaceState');
 
-window.addEventListener('pushState', initPkg_CollectAllDanmaku);
-window.addEventListener('replaceState', initPkg_CollectAllDanmaku);
-window.addEventListener('hashchange', initPkg_CollectAllDanmaku);
-window.addEventListener('popstate', initPkg_CollectAllDanmaku);
+window.addEventListener('pushState', refreshAllDanmaku);
+window.addEventListener('replaceState', refreshAllDanmaku);
+window.addEventListener('hashchange', refreshAllDanmaku);
+window.addEventListener('popstate', refreshAllDanmaku);
 
-(function () {
+(async function () {
 	let timer = setInterval(() => {
 		let dom = document.getElementById("danmukuBox");
 		if (dom) {

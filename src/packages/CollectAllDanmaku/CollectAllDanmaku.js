@@ -20,6 +20,9 @@ message dmItem{
     int32 pool = 11;
     string idStr = 12;
 }`;
+let videoCid = "";
+
+
 function initPkg_CollectAllDanmaku() {
     initPkg_CollectAllDanmaku_Dom();
     initPkg_CollectAllDanmaku_Func();
@@ -39,7 +42,7 @@ function collectAllDanmaku(page) {
         return;
     }
     fetch(
-        `https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid=${unsafeWindow.cid}&segment_index=${page}`
+        `https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid=${videoCid}&segment_index=${page}`
     ).then(response => {
         return response.arrayBuffer();
     }).then(ret => {
@@ -67,5 +70,30 @@ function handleDanmakuList(list) {
         } else {
             allDanmaku[keyName] = [item.midHash];
         }
+    }
+}
+
+function refreshAllDanmaku() {
+    let route = getRoute();
+    switch (route) {
+        case 0:
+            // 在普通页面
+            videoCid = getVideoCid_Main();
+            initPkg_CollectAllDanmaku();
+            break;
+        case 1:
+            // 在番剧页面
+            videoCid = getVideoCid_Bangumi();
+            initPkg_CollectAllDanmaku();
+            break;
+        case 2:
+            // 在课程页面
+            videoCid = getVideoCid_Cheese();
+            initPkg_CollectAllDanmaku();
+            break;
+        default:
+            videoCid = getVideoCid_Main();
+            initPkg_CollectAllDanmaku();
+            break;
     }
 }

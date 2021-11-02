@@ -1,5 +1,10 @@
 let allDanmaku = {}
 
+const DOM_MENU_MAIN = ".player-auxiliary-context-menu-container"
+const DOM_MENU_BANGUMI = ".bpx-player-active"
+const DOM_MENU_CHEESE = ".bpx-player-active"
+
+
 function formatSeconds(value) {
 	var secondTime = parseInt(value / 1000); // 秒
 	var minuteTime = 0; // 分

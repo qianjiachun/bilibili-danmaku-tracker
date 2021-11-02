@@ -2,10 +2,12 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2021.10.23.03
+// @version      2021.11.02.01
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳
 // @match        *://www.bilibili.com/video/*
+// @match        *://www.bilibili.com/bangumi/play/*
+// @match        *://www.bilibili.com/cheese/play/*
 // @grant        unsafeWindow
 // @grant        GM_xmlhttpRequest
 // @require      https://cdn.jsdelivr.net/npm/protobufjs@6.10.2/dist/protobuf.min.js
@@ -13,8 +15,7 @@
 // ==/UserScript==
 
 function init() {
-	initPkg_CollectAllDanmaku();
-	initPkg_Main();
+	init_Router();
 }
 
 function initStyles() {
@@ -37,12 +38,12 @@ const _historyWrap = function (type) {
 history.pushState = _historyWrap('pushState');
 history.replaceState = _historyWrap('replaceState');
 
-window.addEventListener('pushState', initPkg_CollectAllDanmaku);
-window.addEventListener('replaceState', initPkg_CollectAllDanmaku);
-window.addEventListener('hashchange', initPkg_CollectAllDanmaku);
-window.addEventListener('popstate', initPkg_CollectAllDanmaku);
+window.addEventListener('pushState', refreshAllDanmaku);
+window.addEventListener('replaceState', refreshAllDanmaku);
+window.addEventListener('hashchange', refreshAllDanmaku);
+window.addEventListener('popstate', refreshAllDanmaku);
 
-(function () {
+(async function () {
 	let timer = setInterval(() => {
 		let dom = document.getElementById("danmukuBox");
 		if (dom) {

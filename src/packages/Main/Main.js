@@ -9,38 +9,46 @@ function initPkg_Main_Dom() {
 
 function initPkg_Main_Func() {
     let selectedDom = null;
-    document.addEventListener("contextmenu", (e) => {
-        let path = e.path || (e.composedPath && e.composedPath());
-        selectedDom = getSelectedDom(path);
-        let dom = document.querySelector(".player-auxiliary-context-menu-container");
-        if (dom) {
-            if (dom.querySelector("#query-sender")) {
-                return;
-            }
-            let ul = dom.querySelector("ul");
-            let li = document.createElement("li");
-            li.id = "query-sender";
-            li.className = "context-line context-menu-function";
-            li.innerHTML = `
-            <a class="context-menu-a js-action" href="javascript:void(0);" data-disabled="0">
-                查看发送者
-            </a>`;
-            ul.appendChild(li);
-
-            li.addEventListener("click", () => {
-                if (selectedDom) {
-                    renderSenderInfoWrap();
-                    showSelectedInfo(selectedDom);
+    document.getElementById("danmukuBox").addEventListener("contextmenu", (e) => {
+        setTimeout(() => {
+            let path = e.path || (e.composedPath && e.composedPath());
+            selectedDom = getSelectedDom(path);
+            let dom = document.querySelector(DOM_MENU_MAIN) || document.querySelector(DOM_MENU_BANGUMI) || document.querySelector(DOM_MENU_CHEESE);
+            if (dom) {
+                if (dom.querySelector("#query-sender")) {
+                    return;
                 }
-            })
-        }
-    })
+                removeSenderInfoWrap();
+                
+                let ul = dom.querySelector("ul");
+                let li = document.createElement("li");
+                li.id = "query-sender";
+                li.className = "context-line context-menu-function";
+                li.innerHTML = `
+                <a style="color:#444" class="context-menu-a js-action" href="javascript:void(0);" data-disabled="0">
+                    查看发送者
+                </a>`;
+                if (ul) {
+                    ul.appendChild(li);
+                } else {
+                    dom.appendChild(li);
+                }
+
+                li.addEventListener("click", () => {
+                    if (selectedDom) {
+                        renderSenderInfoWrap();
+                        showSelectedInfo(selectedDom);
+                    }
+                })
+            }
+        }, 0);
+    }, true)
 }
 
 function getSelectedDom(path) {
     let ret = null;
     for (let i = 0; i < path.length; i++) {
-        if (path[i].className && path[i].className.indexOf("danmaku-info-row") !== -1) {
+        if (path[i].className && (path[i].className.includes("danmaku-info-row") || path[i].className.includes("dm-info-row"))) {
             ret = path[i];
             break;
         }
@@ -49,8 +57,10 @@ function getSelectedDom(path) {
 }
 
 function showSelectedInfo(dom) {
-    let progress = dom.getElementsByClassName("danmaku-info-time")[0].innerText;
-    let content = dom.getElementsByClassName("danmaku-info-danmaku")[0].innerText;
+    let domTime = dom.getElementsByClassName("danmaku-info-time")[0];
+    let domContent = dom.getElementsByClassName("danmaku-info-danmaku")[0];
+    let progress = domTime ? domTime.innerText :dom.getElementsByClassName("dm-info-time")[0].innerText;
+    let content = domContent ? domContent.innerText : dom.getElementsByClassName("dm-info-dm")[0].innerText;
     let keyName = `${content}|${progress}`;
     let uidList = [];
     if (keyName in allDanmaku) {
@@ -64,10 +74,7 @@ function showSelectedInfo(dom) {
 }
 
 function renderSenderInfoWrap() {
-    let domWrapList = document.getElementsByClassName("senderinfo__wrap");
-    if (domWrapList.length > 0) {
-        domWrapList[0].remove();
-    }
+    removeSenderInfoWrap();
     let div = document.createElement("div");
     div.className = "senderinfo__wrap";
     div.innerHTML = `
@@ -133,5 +140,16 @@ function renderSenderInfoCard(uidList) {
                 domCard.innerHTML += html;
             }
         });
+    }
+}
+
+function getVideoCid_Main() {
+    return String(unsafeWindow.cid);
+}
+
+function removeSenderInfoWrap() {
+    let domWrapList = document.getElementsByClassName("senderinfo__wrap");
+    if (domWrapList.length > 0) {
+        domWrapList[0].remove();
     }
 }

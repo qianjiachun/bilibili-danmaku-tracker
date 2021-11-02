@@ -57,6 +57,7 @@
 .senderinfo__name {
     font-size: 16px;
     font-weight: bold;
+    color: black;
 }
 
 .senderinfo__name-loading {
@@ -79,6 +80,7 @@
     word-wrap: break-word;
     margin-top: 10px;
     text-align: center;
+    line-height: 12px;
 }
 
 .senderinfo__sign-loading {
