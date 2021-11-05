@@ -10,8 +10,8 @@ function initPkg_Main_Dom() {
 function initPkg_Main_Func() {
     let selectedDom = null;
     document.getElementById("danmukuBox").addEventListener("contextmenu", (e) => {
+        let path = e.path || (e.composedPath && e.composedPath());
         setTimeout(() => {
-            let path = e.path || (e.composedPath && e.composedPath());
             selectedDom = getSelectedDom(path);
             let dom = document.querySelector(DOM_MENU_MAIN) || document.querySelector(DOM_MENU_BANGUMI) || document.querySelector(DOM_MENU_CHEESE);
             if (dom) {

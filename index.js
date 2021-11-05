@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2021.11.02.01
+// @version      2021.11.05.01
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳
 // @match        *://www.bilibili.com/video/*
@@ -161,8 +161,8 @@ function initPkg_Main_Dom() {
 function initPkg_Main_Func() {
     let selectedDom = null;
     document.getElementById("danmukuBox").addEventListener("contextmenu", (e) => {
+        let path = e.path || (e.composedPath && e.composedPath());
         setTimeout(() => {
-            let path = e.path || (e.composedPath && e.composedPath());
             selectedDom = getSelectedDom(path);
             let dom = document.querySelector(DOM_MENU_MAIN) || document.querySelector(DOM_MENU_BANGUMI) || document.querySelector(DOM_MENU_CHEESE);
             if (dom) {
