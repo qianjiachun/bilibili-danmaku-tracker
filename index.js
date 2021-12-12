@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2021.11.05.01
+// @version      2021.12.12.01
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳
 // @match        *://www.bilibili.com/video/*
@@ -12,6 +12,7 @@
 // @grant        GM_xmlhttpRequest
 // @require      https://cdn.jsdelivr.net/npm/protobufjs@6.10.2/dist/protobuf.min.js
 // @connect      bilibili.com
+// @license      MIT
 // ==/UserScript==
 
 function init() {
@@ -20,7 +21,7 @@ function init() {
 
 function initStyles() {
 	let style = document.createElement("style");
-	style.appendChild(document.createTextNode(`.senderinfo__wrap {    width: 280px;    z-index: 1;    background-color: white;    border-radius: 8px;    box-shadow: 0 0 30px 2px rgb(0 0 0 / 10%);    position: absolute;    left: 50%;    top: 50%;    transform: translate(-50%, -50%);    max-height: 300px;    box-sizing: border-box;    padding: 5px;    overflow: auto;}.senderinfo__card {    margin-bottom: 5px;    margin-top: 5px;}.senderinfo__close {    margin-right: 5px;    margin-top: 5px;    cursor: pointer;    position: absolute;    margin-left: 260px;    margin-top: 0px;}.senderinfo__avatar {    width: 100%;    height: 70px;    overflow: hidden;    text-align: center;}.senderinfo__img-loding {    width: 70px;    height: 70px;    border-radius: 50%;    background-color: rgb(225,232,238);    display: inline-block;}.senderinfo__avatar img {    width: 70px;    height: 70px;    border-radius: 50%;}.senderinfo__user {    text-align: center;    margin-top: 10px;}.senderinfo__name {    font-size: 16px;    font-weight: bold;    color: black;}.senderinfo__name-loading {    width: 100px;    height: 16px;    background-color: rgb(225,232,238);    display: inline-block;}.senderinfo__level {    line-height: 17px;    margin-left: 5px;    position: absolute;    color: #99a2aa;}.senderinfo__sign {    color: #99a2aa;    word-break: break-all;    word-wrap: break-word;    margin-top: 10px;    text-align: center;    line-height: 12px;}.senderinfo__sign-loading {    width: 150px;    height: 16px;    background-color: rgb(225,232,238);    display: inline-block;}.senderinfo__wrap::-webkit-scrollbar {    width: 4px;    }.senderinfo__wrap::-webkit-scrollbar-thumb {    border-radius: 10px;    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);    background: rgba(0,0,0,0.2);}.senderinfo__wrap::-webkit-scrollbar-track {    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);    border-radius: 0;    background: rgba(0,0,0,0.1);}`));
+	style.appendChild(document.createTextNode(`.senderinfo__wrap {    width: 280px;    z-index: 1;    background-color: white;    border-radius: 8px;    box-shadow: 0 0 30px 2px rgb(0 0 0 / 10%);    position: absolute;    left: 50%;    top: 50%;    transform: translate(-50%, -50%);    max-height: 300px;    box-sizing: border-box;    padding: 5px;    overflow: auto;}.senderinfo__card {    margin-bottom: 5px;    margin-top: 5px;}.senderinfo__github {    position: absolute;}.senderinfo__close {    margin-right: 5px;    margin-top: 5px;    cursor: pointer;    position: absolute;    margin-left: 260px;    margin-top: 0px;}.senderinfo__avatar {    width: 100%;    height: 70px;    overflow: hidden;    text-align: center;}.senderinfo__img-loding {    width: 70px;    height: 70px;    border-radius: 50%;    background-color: rgb(225,232,238);    display: inline-block;}.senderinfo__avatar img {    width: 70px;    height: 70px;    border-radius: 50%;}.senderinfo__user {    text-align: center;    margin-top: 10px;}.senderinfo__name {    font-size: 16px;    font-weight: bold;    color: black;}.senderinfo__name-loading {    width: 100px;    height: 16px;    background-color: rgb(225,232,238);    display: inline-block;}.senderinfo__level {    line-height: 17px;    margin-left: 5px;    position: absolute;    color: #99a2aa;}.senderinfo__sign {    color: #99a2aa;    word-break: break-all;    word-wrap: break-word;    margin-top: 10px;    text-align: center;    line-height: 12px;}.senderinfo__sign-loading {    width: 150px;    height: 16px;    background-color: rgb(225,232,238);    display: inline-block;}.senderinfo__wrap::-webkit-scrollbar {    width: 4px;    }.senderinfo__wrap::-webkit-scrollbar-thumb {    border-radius: 10px;    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);    background: rgba(0,0,0,0.2);}.senderinfo__wrap::-webkit-scrollbar-track {    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);    border-radius: 0;    background: rgba(0,0,0,0.1);}`));
 	document.head.appendChild(style);
 }
 
@@ -230,6 +231,7 @@ function renderSenderInfoWrap() {
     div.className = "senderinfo__wrap";
     div.innerHTML = `
     <div class="senderinfo__close">X</div>
+    <a href="https://github.com/qianjiachun/bilibili-danmaku-tracker" target="_blank" class="senderinfo__github"><svg t="1639304975096" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2323" width="16" height="16"><path d="M512 42.666667A464.64 464.64 0 0 0 42.666667 502.186667 460.373333 460.373333 0 0 0 363.52 938.666667c23.466667 4.266667 32-9.813333 32-22.186667v-78.08c-130.56 27.733333-158.293333-61.44-158.293333-61.44a122.026667 122.026667 0 0 0-52.053334-67.413333c-42.666667-28.16 3.413333-27.733333 3.413334-27.733334a98.56 98.56 0 0 1 71.68 47.36 101.12 101.12 0 0 0 136.533333 37.973334 99.413333 99.413333 0 0 1 29.866667-61.44c-104.106667-11.52-213.333333-50.773333-213.333334-226.986667a177.066667 177.066667 0 0 1 47.36-124.16 161.28 161.28 0 0 1 4.693334-121.173333s39.68-12.373333 128 46.933333a455.68 455.68 0 0 1 234.666666 0c89.6-59.306667 128-46.933333 128-46.933333a161.28 161.28 0 0 1 4.693334 121.173333A177.066667 177.066667 0 0 1 810.666667 477.866667c0 176.64-110.08 215.466667-213.333334 226.986666a106.666667 106.666667 0 0 1 32 85.333334v125.866666c0 14.933333 8.533333 26.88 32 22.186667A460.8 460.8 0 0 0 981.333333 502.186667 464.64 464.64 0 0 0 512 42.666667" p-id="2324"></path></svg></a>
     <div class="senderinfo__content">
         <div class="senderinfo__loading">
             <div class="senderinfo__card">

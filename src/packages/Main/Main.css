@@ -20,6 +20,10 @@
     margin-top: 5px;
 }
 
+.senderinfo__github {
+    position: absolute;
+}
+
 .senderinfo__close {
     margin-right: 5px;
     margin-top: 5px;
