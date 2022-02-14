@@ -2,10 +2,11 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2021.12.13.01
+// @version      2022.02.14.01
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳
 // @match        *://www.bilibili.com/video/*
+// @match        *://www.bilibili.com/festival/*
 // @match        *://www.bilibili.com/bangumi/play/*
 // @match        *://www.bilibili.com/cheese/play/*
 // @grant        unsafeWindow
