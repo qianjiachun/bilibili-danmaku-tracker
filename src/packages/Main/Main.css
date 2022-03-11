@@ -1,6 +1,6 @@
 .senderinfo__wrap {
     width: 280px;
-    min-height: 130px;
+    min-height: 110px;
     height: auto;
     z-index: 1;
     background-color: white;
@@ -23,6 +23,8 @@
 }
 
 .senderinfo__github {
+    width: 16px;
+    height: 16px;
     position: absolute;
 }
 
