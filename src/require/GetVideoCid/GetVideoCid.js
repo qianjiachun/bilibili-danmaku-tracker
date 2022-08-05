@@ -9,5 +9,17 @@ function getVideoCid_Cheese() {
 }
 
 function getVideoCid_Main() {
-    return String(unsafeWindow.cid);
+    let cidMap = unsafeWindow.__INITIAL_STATE__.cidMap;
+    let keys = Object.keys(cidMap);
+    if (keys.length > 0) {
+        let cids = cidMap[keys[0]].cids;
+        let cidsKeys = Object.keys(cids);
+        if (cidsKeys.length > 0) {
+            return String(cids[cidsKeys[0]]);
+        } else {
+            return "";
+        }
+    } else {
+        return "";
+    }
 }

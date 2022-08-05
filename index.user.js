@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2022.03.11.01
+// @version      2022.08.05.01
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳
 // @match        *://www.bilibili.com/video/*
@@ -19,7 +19,7 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2022.03.11.01
+// @version      2022.08.05.01
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳
 // @match        *://www.bilibili.com/video/*
@@ -118,8 +118,10 @@ function collectAllDanmaku(page) {
         return response.arrayBuffer();
     }).then(ret => {
         let data = new Uint8Array(ret);
+        console.log("哈哈",data)
         protobuf.loadFromString("dm", protoStr).then(root => {
             let dmList = root.lookupType("dm.dmList").decode(data);
+            console.log("嘻嘻", dmList)
             handleDanmakuList(dmList.list);
         })
         if (ret.byteLength > 0) {
@@ -146,6 +148,7 @@ function handleDanmakuList(list) {
 
 function refreshAllDanmaku() {
     let route = getRoute();
+    console.log("route",route)
     switch (route) {
         case 0:
             // 在普通页面
@@ -167,6 +170,7 @@ function refreshAllDanmaku() {
             initPkg_CollectAllDanmaku();
             break;
     }
+    console.log("videoCid", videoCid)
 }
 function initPkg_Main() {
     initPkg_Main_Dom();
@@ -440,7 +444,19 @@ function getVideoCid_Cheese() {
 }
 
 function getVideoCid_Main() {
-    return String(unsafeWindow.cid);
+    let cidMap = unsafeWindow.__INITIAL_STATE__.cidMap;
+    let keys = Object.keys(cidMap);
+    if (keys.length > 0) {
+        let cids = cidMap[keys[0]].cids;
+        let cidsKeys = Object.keys(cids);
+        if (cidsKeys.length > 0) {
+            return String(cids[cidsKeys[0]]);
+        } else {
+            return "";
+        }
+    } else {
+        return "";
+    }
 }
 
 protobuf.loadFromString = (name, protoStr) => {
