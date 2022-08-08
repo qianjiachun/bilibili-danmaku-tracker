@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2022.08.05.01
+// @version      2022.08.08.01
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳
 // @match        *://www.bilibili.com/video/*
@@ -101,10 +101,8 @@ function collectAllDanmaku(page) {
         return response.arrayBuffer();
     }).then(ret => {
         let data = new Uint8Array(ret);
-        console.log("哈哈",data)
         protobuf.loadFromString("dm", protoStr).then(root => {
             let dmList = root.lookupType("dm.dmList").decode(data);
-            console.log("嘻嘻", dmList)
             handleDanmakuList(dmList.list);
         })
         if (ret.byteLength > 0) {
@@ -129,9 +127,8 @@ function handleDanmakuList(list) {
     }
 }
 
-function refreshAllDanmaku() {
+async function refreshAllDanmaku() {
     let route = getRoute();
-    console.log("route",route)
     switch (route) {
         case 0:
             // 在普通页面
@@ -145,7 +142,8 @@ function refreshAllDanmaku() {
             break;
         case 2:
             // 在课程页面
-            videoCid = getVideoCid_Cheese();
+            videoCid = await getVideoCid_Cheese();
+            console.log(videoCid)
             initPkg_CollectAllDanmaku();
             break;
         default:
@@ -153,7 +151,6 @@ function refreshAllDanmaku() {
             initPkg_CollectAllDanmaku();
             break;
     }
-    console.log("videoCid", videoCid)
 }
 function initPkg_Main() {
     initPkg_Main_Dom();
@@ -421,9 +418,25 @@ function getVideoCid_Bangumi() {
 }
 
 function getVideoCid_Cheese() {
-    let episodes = unsafeWindow.PlayerAgent.getEpisodes();
-    let _id = unsafeWindow.$('li.on.list-box-li').index();
-    return String(episodes[_id].cid);
+    // let episodes = unsafeWindow.PlayerAgent.getEpisodes();
+    // let _id = unsafeWindow.$('li.on.list-box-li').index();
+    // return String(episodes[_id].cid);
+    // let cid = "";
+    // while (cid === "") {
+    //     if (window.bpNC_1) {
+    //         console.log(window.bpNC_1)
+    //         cid = window.bpNC_1.config.cid;
+    //     }
+    // }
+    return new Promise(resolve => {
+       let timer = setInterval(() => {
+        if (unsafeWindow.bpNC_1) {
+            clearInterval(timer);
+            resolve(unsafeWindow.bpNC_1.config.cid);
+        }
+       }, 1000); 
+    });
+    // return cid;
 }
 
 function getVideoCid_Main() {

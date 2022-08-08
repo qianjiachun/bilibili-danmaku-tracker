@@ -47,10 +47,8 @@ function collectAllDanmaku(page) {
         return response.arrayBuffer();
     }).then(ret => {
         let data = new Uint8Array(ret);
-        console.log("哈哈",data)
         protobuf.loadFromString("dm", protoStr).then(root => {
             let dmList = root.lookupType("dm.dmList").decode(data);
-            console.log("嘻嘻", dmList)
             handleDanmakuList(dmList.list);
         })
         if (ret.byteLength > 0) {
@@ -75,9 +73,8 @@ function handleDanmakuList(list) {
     }
 }
 
-function refreshAllDanmaku() {
+async function refreshAllDanmaku() {
     let route = getRoute();
-    console.log("route",route)
     switch (route) {
         case 0:
             // 在普通页面
@@ -91,7 +88,8 @@ function refreshAllDanmaku() {
             break;
         case 2:
             // 在课程页面
-            videoCid = getVideoCid_Cheese();
+            videoCid = await getVideoCid_Cheese();
+            console.log(videoCid)
             initPkg_CollectAllDanmaku();
             break;
         default:
@@ -99,5 +97,4 @@ function refreshAllDanmaku() {
             initPkg_CollectAllDanmaku();
             break;
     }
-    console.log("videoCid", videoCid)
 }
