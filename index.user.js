@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2022.08.05.01
+// @version      2022.09.13.01
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳
 // @match        *://www.bilibili.com/video/*
@@ -19,7 +19,7 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2022.08.05.01
+// @version      2022.09.13.01
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳
 // @match        *://www.bilibili.com/video/*
@@ -64,6 +64,32 @@ function formatSeconds(value) {
 	// }
 	return result;
 }
+
+function toSecond(e){
+	var time = e;
+	var len= time.split(':')
+	if(len.length==3){
+	var hour = time.split(':')[0];
+	var min = time.split(':')[1];
+	var sec = time.split(':')[2];
+	return  Number(hour*3600) + Number(min*60) + Number(sec);
+	}
+	if(len.length==2){
+				var min = time.split(':')[0];
+				var sec = time.split(':')[1];
+			return   Number(min*60) + Number(sec);
+	}
+	if(len.length==1){
+				var sec = time.split(':')[0];
+			return    Number(sec);
+	}
+
+// var hour = time.split(':')[0];
+// var min = time.split(':')[1];
+// var sec = time.split(':')[2];
+// return  Number(hour*3600) + Number(min*60) + Number(sec);
+}
+
 
 function getStrMiddle(str, before, after) {
 	let m = str.match(new RegExp(before + '(.*?)' + after));
@@ -118,10 +144,8 @@ function collectAllDanmaku(page) {
         return response.arrayBuffer();
     }).then(ret => {
         let data = new Uint8Array(ret);
-        console.log("哈哈",data)
         protobuf.loadFromString("dm", protoStr).then(root => {
             let dmList = root.lookupType("dm.dmList").decode(data);
-            console.log("嘻嘻", dmList)
             handleDanmakuList(dmList.list);
         })
         if (ret.byteLength > 0) {
@@ -137,7 +161,7 @@ function handleDanmakuList(list) {
         let item = list[i];
         let content = item.content;
         let progress = "progress" in item ? item.progress : 0;
-        let keyName = `${content}|${formatSeconds(progress)}`;
+        let keyName = `${content}|${parseInt(progress / 1000)}`;
         if (keyName in allDanmaku) {
             allDanmaku[keyName].push(item.midHash);
         } else {
@@ -146,9 +170,8 @@ function handleDanmakuList(list) {
     }
 }
 
-function refreshAllDanmaku() {
+async function refreshAllDanmaku() {
     let route = getRoute();
-    console.log("route",route)
     switch (route) {
         case 0:
             // 在普通页面
@@ -162,7 +185,7 @@ function refreshAllDanmaku() {
             break;
         case 2:
             // 在课程页面
-            videoCid = getVideoCid_Cheese();
+            videoCid = await getVideoCid_Cheese();
             initPkg_CollectAllDanmaku();
             break;
         default:
@@ -170,7 +193,6 @@ function refreshAllDanmaku() {
             initPkg_CollectAllDanmaku();
             break;
     }
-    console.log("videoCid", videoCid)
 }
 function initPkg_Main() {
     initPkg_Main_Dom();
@@ -235,7 +257,7 @@ function showSelectedInfo(dom) {
     let domContent = dom.getElementsByClassName("danmaku-info-danmaku")[0];
     let progress = domTime ? domTime.innerText :dom.getElementsByClassName("dm-info-time")[0].innerText;
     let content = domContent ? domContent.innerText : dom.getElementsByClassName("dm-info-dm")[0].innerText;
-    let keyName = `${content}|${progress}`;
+    let keyName = `${content}|${toSecond(progress)}`;
     let uidList = [];
     if (keyName in allDanmaku) {
         for (let i = 0; i < allDanmaku[keyName].length; i++) {
@@ -438,9 +460,25 @@ function getVideoCid_Bangumi() {
 }
 
 function getVideoCid_Cheese() {
-    let episodes = unsafeWindow.PlayerAgent.getEpisodes();
-    let _id = unsafeWindow.$('li.on.list-box-li').index();
-    return String(episodes[_id].cid);
+    // let episodes = unsafeWindow.PlayerAgent.getEpisodes();
+    // let _id = unsafeWindow.$('li.on.list-box-li').index();
+    // return String(episodes[_id].cid);
+    // let cid = "";
+    // while (cid === "") {
+    //     if (window.bpNC_1) {
+    //         console.log(window.bpNC_1)
+    //         cid = window.bpNC_1.config.cid;
+    //     }
+    // }
+    return new Promise(resolve => {
+       let timer = setInterval(() => {
+        if (unsafeWindow.bpNC_1) {
+            clearInterval(timer);
+            resolve(unsafeWindow.bpNC_1.config.cid);
+        }
+       }, 1000); 
+    });
+    // return cid;
 }
 
 function getVideoCid_Main() {

@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2022.08.08.01
+// @version      2022.09.13.01
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳
 // @match        *://www.bilibili.com/video/*
@@ -47,6 +47,32 @@ function formatSeconds(value) {
 	// }
 	return result;
 }
+
+function toSecond(e){
+	var time = e;
+	var len= time.split(':')
+	if(len.length==3){
+	var hour = time.split(':')[0];
+	var min = time.split(':')[1];
+	var sec = time.split(':')[2];
+	return  Number(hour*3600) + Number(min*60) + Number(sec);
+	}
+	if(len.length==2){
+				var min = time.split(':')[0];
+				var sec = time.split(':')[1];
+			return   Number(min*60) + Number(sec);
+	}
+	if(len.length==1){
+				var sec = time.split(':')[0];
+			return    Number(sec);
+	}
+
+// var hour = time.split(':')[0];
+// var min = time.split(':')[1];
+// var sec = time.split(':')[2];
+// return  Number(hour*3600) + Number(min*60) + Number(sec);
+}
+
 
 function getStrMiddle(str, before, after) {
 	let m = str.match(new RegExp(before + '(.*?)' + after));
@@ -118,7 +144,7 @@ function handleDanmakuList(list) {
         let item = list[i];
         let content = item.content;
         let progress = "progress" in item ? item.progress : 0;
-        let keyName = `${content}|${formatSeconds(progress)}`;
+        let keyName = `${content}|${parseInt(progress / 1000)}`;
         if (keyName in allDanmaku) {
             allDanmaku[keyName].push(item.midHash);
         } else {
@@ -143,7 +169,6 @@ async function refreshAllDanmaku() {
         case 2:
             // 在课程页面
             videoCid = await getVideoCid_Cheese();
-            console.log(videoCid)
             initPkg_CollectAllDanmaku();
             break;
         default:
@@ -215,7 +240,7 @@ function showSelectedInfo(dom) {
     let domContent = dom.getElementsByClassName("danmaku-info-danmaku")[0];
     let progress = domTime ? domTime.innerText :dom.getElementsByClassName("dm-info-time")[0].innerText;
     let content = domContent ? domContent.innerText : dom.getElementsByClassName("dm-info-dm")[0].innerText;
-    let keyName = `${content}|${progress}`;
+    let keyName = `${content}|${toSecond(progress)}`;
     let uidList = [];
     if (keyName in allDanmaku) {
         for (let i = 0; i < allDanmaku[keyName].length; i++) {

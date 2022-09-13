@@ -61,7 +61,7 @@ function showSelectedInfo(dom) {
     let domContent = dom.getElementsByClassName("danmaku-info-danmaku")[0];
     let progress = domTime ? domTime.innerText :dom.getElementsByClassName("dm-info-time")[0].innerText;
     let content = domContent ? domContent.innerText : dom.getElementsByClassName("dm-info-dm")[0].innerText;
-    let keyName = `${content}|${progress}`;
+    let keyName = `${content}|${toSecond(progress)}`;
     let uidList = [];
     if (keyName in allDanmaku) {
         for (let i = 0; i < allDanmaku[keyName].length; i++) {

@@ -64,7 +64,7 @@ function handleDanmakuList(list) {
         let item = list[i];
         let content = item.content;
         let progress = "progress" in item ? item.progress : 0;
-        let keyName = `${content}|${formatSeconds(progress)}`;
+        let keyName = `${content}|${parseInt(progress / 1000)}`;
         if (keyName in allDanmaku) {
             allDanmaku[keyName].push(item.midHash);
         } else {
@@ -89,7 +89,6 @@ async function refreshAllDanmaku() {
         case 2:
             // 在课程页面
             videoCid = await getVideoCid_Cheese();
-            console.log(videoCid)
             initPkg_CollectAllDanmaku();
             break;
         default:

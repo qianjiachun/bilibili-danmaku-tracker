@@ -20,6 +20,32 @@ function formatSeconds(value) {
 	return result;
 }
 
+function toSecond(e){
+	var time = e;
+	var len= time.split(':')
+	if(len.length==3){
+	var hour = time.split(':')[0];
+	var min = time.split(':')[1];
+	var sec = time.split(':')[2];
+	return  Number(hour*3600) + Number(min*60) + Number(sec);
+	}
+	if(len.length==2){
+				var min = time.split(':')[0];
+				var sec = time.split(':')[1];
+			return   Number(min*60) + Number(sec);
+	}
+	if(len.length==1){
+				var sec = time.split(':')[0];
+			return    Number(sec);
+	}
+
+// var hour = time.split(':')[0];
+// var min = time.split(':')[1];
+// var sec = time.split(':')[2];
+// return  Number(hour*3600) + Number(min*60) + Number(sec);
+}
+
+
 function getStrMiddle(str, before, after) {
 	let m = str.match(new RegExp(before + '(.*?)' + after));
 	return m ? m[1] : false;
