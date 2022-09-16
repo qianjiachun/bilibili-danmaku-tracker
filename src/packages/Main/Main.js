@@ -112,35 +112,59 @@ function renderSenderInfoCard(uidList) {
     let domLoading = document.getElementsByClassName("senderinfo__loading")[0];
     for (let i = 0; i < uidList.length; i++) {
         let uid = uidList[i];
-        GM_xmlhttpRequest({
-            method: "GET",
-            url: "https://m.bilibili.com/space/" + uid,
-            responseType: "text",
-            onload: function(response) {
-                domLoading.style.display = "none";
-                let ret = response.response;
-                let str = String(getStrMiddle(ret, `<meta name="description" content="`, "的主页"));
-                let head = String(getStrMiddle(ret, `<link rel="apple-touch-icon" href="`, `">`));
-                let arr = str.split("，");
-                if (arr.length < 2 || arr[0] === "") {
-                    return
-                }
-                arr[1] = arr[1].replace(arr[0], "").replace(";", "");
-                // 此时arr[0]为名字 arr[1]为签名
-                let html = `
-                    <div class="senderinfo__card">
-                        <div class="senderinfo__avatar">
-                            <a href="https://space.bilibili.com/${uid}" target="_blank"><img src="${head}" /></a>
-                        </div>
-                        <div class="senderinfo__user">
-                            <a href="https://space.bilibili.com/${uid}" target="_blank"><span class="senderinfo__name">${arr[0]}</span></a>
-                        </div>
-                        <div class="senderinfo__sign">${arr[1]}</div>
+        fetch(`https://api.bilibili.com/x/space/acc/info?mid=${uid}&token=&platform=web&jsonp=jsonp`)
+        .then(res => res.json())
+        .then(ret => {
+            const {data} = ret;
+            domLoading.style.display = "none";
+            let head = data.face;
+            let name = data.name;
+            let sign = data.sign
+            // 此时arr[0]为名字 arr[1]为签名
+            let html = `
+                <div class="senderinfo__card">
+                    <div class="senderinfo__avatar">
+                        <a href="https://space.bilibili.com/${uid}" target="_blank"><img src="${head}" /></a>
                     </div>
-                `
-                domCard.innerHTML += html;
-            }
-        });
+                    <div class="senderinfo__user">
+                        <a href="https://space.bilibili.com/${uid}" target="_blank"><span class="senderinfo__name">${name}</span></a>
+                    </div>
+                    <div class="senderinfo__sign">${sign}</div>
+                </div>
+            `
+            domCard.innerHTML += html;
+        })
+        // GM_xmlhttpRequest({
+        //     method: "GET",
+        //     url: "https://m.bilibili.com/space/" + uid,
+        //     responseType: "text",
+        //     onload: function(response) {
+        //         domLoading.style.display = "none";
+        //         let ret = response.response;
+        //         console.log(ret)
+        //         console.log(String(getStrMiddle(ret, `<title data-vue-meta="true">`, "的个人空间")),String(getStrMiddle(ret, `<div class="desc"><span class="content">`, "</span>")))
+        //         let str = String(getStrMiddle(ret, `<title data-vue-meta="true">`, "的个人空间"));
+        //         let head = String(getStrMiddle(ret, `<link rel="apple-touch-icon" href="`, `">`));
+        //         let arr = str.split("，");
+        //         if (arr.length < 2 || arr[0] === "") {
+        //             return
+        //         }
+        //         arr[1] = arr[1].replace(arr[0], "").replace(";", "");
+        //         // 此时arr[0]为名字 arr[1]为签名
+        //         let html = `
+        //             <div class="senderinfo__card">
+        //                 <div class="senderinfo__avatar">
+        //                     <a href="https://space.bilibili.com/${uid}" target="_blank"><img src="${head}" /></a>
+        //                 </div>
+        //                 <div class="senderinfo__user">
+        //                     <a href="https://space.bilibili.com/${uid}" target="_blank"><span class="senderinfo__name">${arr[0]}</span></a>
+        //                 </div>
+        //                 <div class="senderinfo__sign">${arr[1]}</div>
+        //             </div>
+        //         `
+        //         domCard.innerHTML += html;
+        //     }
+        // });
     }
 }
 
