@@ -166,10 +166,6 @@ function renderSenderInfoCard(uidList) {
     }
 }
 
-function getVideoCid_Main() {
-    return String(unsafeWindow.cid);
-}
-
 function removeSenderInfoWrap() {
     let domWrapList = document.getElementsByClassName("senderinfo__wrap");
     if (domWrapList.length > 0) {
