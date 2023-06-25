@@ -1,5 +1,5 @@
 function init_Router() {
-    refreshAllDanmaku();
+    // refreshAllDanmaku();
     initPkg_Main();
 }
 
