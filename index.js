@@ -11,16 +11,15 @@
 // @match        *://www.bilibili.com/cheese/play/*
 // @grant        unsafeWindow
 // @grant        GM_xmlhttpRequest
-// @require      https://cdn.jsdelivr.net/npm/protobufjs@6.10.2/dist/protobuf.min.js
+// @require      https://lib.baomitu.com/protobufjs/6.11.2/protobuf.min.js
 // @connect      bilibili.com
 // @run-at       document-start
-// @grant        unsafeWindow
 // @license      MIT
 // ==/UserScript==
 
 unsafeWindow.requestHookList = [];
 unsafeWindow.requestHookCallback = function (xhr) {
-	if (xhr.responseURL.includes("/web/seg.so")) {
+	if (xhr.responseURL.includes("/seg.so")) {
 		let data = new Uint8Array(xhr.response);
 		protobuf.loadFromString("dm", protoStr).then(root => {
 				let dmList = root.lookupType("dm.dmList").decode(data);
@@ -73,37 +72,40 @@ function formatSeconds(value) {
 		minuteTime = parseInt(secondTime / 60);
 		secondTime = parseInt(secondTime % 60);
 	}
-	var result ="" +(parseInt(secondTime) < 10? "0" + parseInt(secondTime): parseInt(secondTime));
+	var result = "" + (parseInt(secondTime) < 10 ? "0" + parseInt(secondTime) : parseInt(secondTime));
 
 	// if (minuteTime > 0) {
-		result ="" + (parseInt(minuteTime) < 10? "0" + parseInt(minuteTime) : parseInt(minuteTime)) + ":" + result;
+	result = "" + (parseInt(minuteTime) < 10 ? "0" + parseInt(minuteTime) : parseInt(minuteTime)) + ":" + result;
 	// }
 	return result;
 }
 
-function toSecond(e){
+function toSecond(e) {
 	var time = e;
-	var len= time.split(':')
-	if(len.length==3){
-	var hour = time.split(':')[0];
-	var min = time.split(':')[1];
-	var sec = time.split(':')[2];
-	return  Number(hour*3600) + Number(min*60) + Number(sec);
+	var len = time.split(':')
+	let min = "";
+	let hour = "";
+	let sec = "";
+	if (len.length == 3) {
+		hour = time.split(':')[0];
+		min = time.split(':')[1];
+		sec = time.split(':')[2];
+		return Number(hour * 3600) + Number(min * 60) + Number(sec);
 	}
-	if(len.length==2){
-				var min = time.split(':')[0];
-				var sec = time.split(':')[1];
-			return   Number(min*60) + Number(sec);
+	if (len.length == 2) {
+		min = time.split(':')[0];
+		sec = time.split(':')[1];
+		return Number(min * 60) + Number(sec);
 	}
-	if(len.length==1){
-				var sec = time.split(':')[0];
-			return    Number(sec);
+	if (len.length == 1) {
+		sec = time.split(':')[0];
+		return Number(sec);
 	}
 
-// var hour = time.split(':')[0];
-// var min = time.split(':')[1];
-// var sec = time.split(':')[2];
-// return  Number(hour*3600) + Number(min*60) + Number(sec);
+	// var hour = time.split(':')[0];
+	// var min = time.split(':')[1];
+	// var sec = time.split(':')[2];
+	// return  Number(hour*3600) + Number(min*60) + Number(sec);
 }
 
 
@@ -378,10 +380,6 @@ function renderSenderInfoCard(uidList) {
     }
 }
 
-function getVideoCid_Main() {
-    return String(unsafeWindow.cid);
-}
-
 function removeSenderInfoWrap() {
     let domWrapList = document.getElementsByClassName("senderinfo__wrap");
     if (domWrapList.length > 0) {
@@ -579,7 +577,6 @@ window.addEventListener('pushState', refreshAllDanmaku);
 window.addEventListener('replaceState', refreshAllDanmaku);
 window.addEventListener('hashchange', refreshAllDanmaku);
 window.addEventListener('popstate', refreshAllDanmaku);
-
 (async function () {
 	let timer = setInterval(() => {
 		let dom = document.getElementById("danmukuBox");

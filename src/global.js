@@ -12,37 +12,40 @@ function formatSeconds(value) {
 		minuteTime = parseInt(secondTime / 60);
 		secondTime = parseInt(secondTime % 60);
 	}
-	var result ="" +(parseInt(secondTime) < 10? "0" + parseInt(secondTime): parseInt(secondTime));
+	var result = "" + (parseInt(secondTime) < 10 ? "0" + parseInt(secondTime) : parseInt(secondTime));
 
 	// if (minuteTime > 0) {
-		result ="" + (parseInt(minuteTime) < 10? "0" + parseInt(minuteTime) : parseInt(minuteTime)) + ":" + result;
+	result = "" + (parseInt(minuteTime) < 10 ? "0" + parseInt(minuteTime) : parseInt(minuteTime)) + ":" + result;
 	// }
 	return result;
 }
 
-function toSecond(e){
+function toSecond(e) {
 	var time = e;
-	var len= time.split(':')
-	if(len.length==3){
-	var hour = time.split(':')[0];
-	var min = time.split(':')[1];
-	var sec = time.split(':')[2];
-	return  Number(hour*3600) + Number(min*60) + Number(sec);
+	var len = time.split(':')
+	let min = "";
+	let hour = "";
+	let sec = "";
+	if (len.length == 3) {
+		hour = time.split(':')[0];
+		min = time.split(':')[1];
+		sec = time.split(':')[2];
+		return Number(hour * 3600) + Number(min * 60) + Number(sec);
 	}
-	if(len.length==2){
-				var min = time.split(':')[0];
-				var sec = time.split(':')[1];
-			return   Number(min*60) + Number(sec);
+	if (len.length == 2) {
+		min = time.split(':')[0];
+		sec = time.split(':')[1];
+		return Number(min * 60) + Number(sec);
 	}
-	if(len.length==1){
-				var sec = time.split(':')[0];
-			return    Number(sec);
+	if (len.length == 1) {
+		sec = time.split(':')[0];
+		return Number(sec);
 	}
 
-// var hour = time.split(':')[0];
-// var min = time.split(':')[1];
-// var sec = time.split(':')[2];
-// return  Number(hour*3600) + Number(min*60) + Number(sec);
+	// var hour = time.split(':')[0];
+	// var min = time.split(':')[1];
+	// var sec = time.split(':')[2];
+	// return  Number(hour*3600) + Number(min*60) + Number(sec);
 }
 
 

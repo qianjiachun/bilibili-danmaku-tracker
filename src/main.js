@@ -11,16 +11,15 @@
 // @match        *://www.bilibili.com/cheese/play/*
 // @grant        unsafeWindow
 // @grant        GM_xmlhttpRequest
-// @require      https://cdn.jsdelivr.net/npm/protobufjs@6.10.2/dist/protobuf.min.js
+// @require      https://lib.baomitu.com/protobufjs/6.11.2/protobuf.min.js
 // @connect      bilibili.com
 // @run-at       document-start
-// @grant        unsafeWindow
 // @license      MIT
 // ==/UserScript==
 
 unsafeWindow.requestHookList = [];
 unsafeWindow.requestHookCallback = function (xhr) {
-	if (xhr.responseURL.includes("/web/seg.so")) {
+	if (xhr.responseURL.includes("/seg.so")) {
 		let data = new Uint8Array(xhr.response);
 		protobuf.loadFromString("dm", protoStr).then(root => {
 				let dmList = root.lookupType("dm.dmList").decode(data);
@@ -77,7 +76,6 @@ window.addEventListener('pushState', refreshAllDanmaku);
 window.addEventListener('replaceState', refreshAllDanmaku);
 window.addEventListener('hashchange', refreshAllDanmaku);
 window.addEventListener('popstate', refreshAllDanmaku);
-
 (async function () {
 	let timer = setInterval(() => {
 		let dom = document.getElementById("danmukuBox");
