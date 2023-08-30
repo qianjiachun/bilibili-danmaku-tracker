@@ -32,7 +32,6 @@ function initPkg_CollectAllDanmaku_Dom() {
 }  
 
 function initPkg_CollectAllDanmaku_Func() {
-    allDanmaku = {};
     collectAllDanmaku(1);
 }
 
