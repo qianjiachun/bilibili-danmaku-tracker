@@ -1,7 +1,7 @@
 ## Bilibili弹幕查询发送者
 
 ### 效果预览
-[![IisfLd.png](https://z3.ax1x.com/2021/11/02/IisfLd.png)]
+![IisfLd.png](https://z3.ax1x.com/2021/11/02/IisfLd.png)
 
 ### 安装地址（Release）
 1. [greasyfork发布页](https://greasyfork.org/zh-CN/scripts/434334)
