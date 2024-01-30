@@ -1,0 +1,19 @@
+{
+  "name": "bilibili-danmaku-tracker",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qianjiachun/bilibili-danmaku-tracker.git"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/qianjiachun/bilibili-danmaku-tracker/issues"
+  },
+  "homepage": "https://github.com/qianjiachun/bilibili-danmaku-tracker#readme",
+  "dependencies": {
+    "uglify-js": "^3.17.4"
+  }
+}
