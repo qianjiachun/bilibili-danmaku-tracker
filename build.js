@@ -28,14 +28,14 @@ function build() {
   template = template.replace("/*编译器标记 勿删*/", css).replace("// 编译器标记 勿删", js);
 
   if (!fs.existsSync("./dist")) fs.mkdirSync("./dist");
-  fs.writeFileSync("./dist/douyuex.js", template);
+  fs.writeFileSync("./dist/index.js", template);
 
   let header = "";
   header = fs.readFileSync("./src/main.js", "utf8").split("// ==/UserScript==")[0];
   header += "// ==/UserScript==\r\n";
 
   const result = uglifyjs.minify(template);
-  fs.writeFileSync("./dist/douyuex.user.js", header + result.code);
+  fs.writeFileSync("./dist/index.user.js", header + result.code);
 }
 
 build();
