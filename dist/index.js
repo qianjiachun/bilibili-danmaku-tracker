@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2024.12.11.01
+// @version      2024.12.12.01
 // @icon         https://static.hdslb.com/mobile/img/512.png
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳
@@ -363,8 +363,10 @@ function renderSenderInfoCard(uidList) {
                 let parser = new DOMParser();
                 let doc = parser.parseFromString(ret, "text/html");
                 if (!doc) return;
-                let name = String(getStrMiddle(ret, `<html><head><title>`, "的个人空间"));
-                let head = String(doc.querySelector(".m-space-info").querySelector(".face").querySelector("img").src);
+                let name = String(getStrMiddle(ret, `content="哔哩哔哩`, "的个人空间"));
+                let headImg = doc.querySelector(".m-space-info").querySelector(".face").querySelector("img");
+                if (!headImg) return;
+                let head = String(headImg.src);
 
                 let sign = String(doc.querySelector(".desc").querySelector(".content").innerHTML);
                 if (!name || name === "" || name === "false") return;

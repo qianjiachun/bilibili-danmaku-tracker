@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2024.12.11.01
+// @version      2024.12.12.01
 // @icon         https://static.hdslb.com/mobile/img/512.png
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳
@@ -60,7 +60,7 @@ message dmItem{
             </div>
         </div>
     </div>
-    `;var n=document.getElementsByClassName("bui-collapse-wrap")[0];n.insertBefore(e,n.childNodes[0]),document.getElementsByClassName("senderinfo__close")[0].addEventListener("click",()=>{e.remove()})}function renderSenderInfoCard(n){let r=document.getElementsByClassName("senderinfo__content")[0];if(r){let a=document.getElementsByClassName("senderinfo__loading")[0];for(let e=0;e<n.length;e++){let i=n[e];GM_xmlhttpRequest({method:"GET",url:"https://m.bilibili.com/space/"+i,headers:{cookie:document.cookie,"user-agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/105.0.0.0"},responseType:"text",onload:function(e){a.style.display="none";var n,e=e.response,t=(new DOMParser).parseFromString(e,"text/html");t&&(e=String(getStrMiddle(e,"<html><head><title>","的个人空间")),n=String(t.querySelector(".m-space-info").querySelector(".face").querySelector("img").src),t=String(t.querySelector(".desc").querySelector(".content").innerHTML),e)&&""!==e&&"false"!==e&&(n=`
+    `;var n=document.getElementsByClassName("bui-collapse-wrap")[0];n.insertBefore(e,n.childNodes[0]),document.getElementsByClassName("senderinfo__close")[0].addEventListener("click",()=>{e.remove()})}function renderSenderInfoCard(n){let r=document.getElementsByClassName("senderinfo__content")[0];if(r){let a=document.getElementsByClassName("senderinfo__loading")[0];for(let e=0;e<n.length;e++){let i=n[e];GM_xmlhttpRequest({method:"GET",url:"https://m.bilibili.com/space/"+i,headers:{cookie:document.cookie,"user-agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/105.0.0.0"},responseType:"text",onload:function(e){a.style.display="none";var n,e=e.response,t=(new DOMParser).parseFromString(e,"text/html");t&&(e=String(getStrMiddle(e,'content="哔哩哔哩',"的个人空间")),n=t.querySelector(".m-space-info").querySelector(".face").querySelector("img"))&&(n=String(n.src),t=String(t.querySelector(".desc").querySelector(".content").innerHTML),e)&&""!==e&&"false"!==e&&(n=`
                     <div class="senderinfo__card">
                         <div class="senderinfo__avatar">
                             <a href="https://space.bilibili.com/${i}" target="_blank"><img src="${n}" /></a>
