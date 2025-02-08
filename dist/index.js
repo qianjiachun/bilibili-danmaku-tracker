@@ -180,7 +180,8 @@ function handleDanmakuList(list) {
         let content = item.content;
         let progress = "progress" in item ? item.progress : 0;
         let keyName = `${content}|${parseInt(progress / 1000)}`;
-        if (keyName in allDanmaku && !allDanmaku[keyName].includes(item.midHash)) {
+        if (keyName in allDanmaku) {
+            if (allDanmaku[keyName].includes(item.midHash)) continue
             allDanmaku[keyName].push(item.midHash);
         } else {
             allDanmaku[keyName] = [item.midHash];
@@ -218,7 +219,7 @@ function initPkg_Main() {
 }
 
 function initPkg_Main_Dom() {
-
+    
 }
 
 function initPkg_Main_Func() {
@@ -233,7 +234,7 @@ function initPkg_Main_Func() {
                     return;
                 }
                 removeSenderInfoWrap();
-
+                
                 let ul = dom.querySelector("ul");
                 let li = document.createElement("li");
                 li.id = "query-sender";
@@ -253,10 +254,10 @@ function initPkg_Main_Func() {
                         renderSenderInfoWrap();
                         showSelectedInfo(selectedDom);
                     }
-                });
+                })
             }
         }, 0);
-    }, true);
+    }, true)
 }
 
 function getSelectedDom(path) {
@@ -273,7 +274,7 @@ function getSelectedDom(path) {
 function showSelectedInfo(dom) {
     let domTime = dom.getElementsByClassName("danmaku-info-time")[0];
     let domContent = dom.getElementsByClassName("danmaku-info-danmaku")[0];
-    let progress = domTime ? domTime.innerText : dom.getElementsByClassName("dm-info-time")[0].innerText;
+    let progress = domTime ? domTime.innerText :dom.getElementsByClassName("dm-info-time")[0].innerText;
     let content = domContent ? domContent.title : dom.getElementsByClassName("dm-info-dm")[0].title;
     let keyName = `${content}|${toSecond(progress)}`;
     let uidList = [];
@@ -310,13 +311,13 @@ function renderSenderInfoWrap() {
             </div>
         </div>
     </div>
-    `;
+    `
     let b = document.getElementsByClassName("bui-collapse-wrap")[0];
     b.insertBefore(div, b.childNodes[0]);
 
     document.getElementsByClassName("senderinfo__close")[0].addEventListener("click", () => {
         div.remove();
-    });
+    })
 }
 
 function renderSenderInfoCard(uidList) {
@@ -499,7 +500,7 @@ function make_crc32_cracker() {
                     var items = lookup(rem);
                     items.forEach(function (z) {
                         results.push(prefix * 100000 + z);
-                    });
+                    })
                 }
             }
         }
