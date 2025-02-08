@@ -65,6 +65,7 @@ function handleDanmakuList(list) {
         let progress = "progress" in item ? item.progress : 0;
         let keyName = `${content}|${parseInt(progress / 1000)}`;
         if (keyName in allDanmaku) {
+            if (allDanmaku[keyName].includes(item.midHash)) continue
             allDanmaku[keyName].push(item.midHash);
         } else {
             allDanmaku[keyName] = [item.midHash];
