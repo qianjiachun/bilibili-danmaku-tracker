@@ -110,6 +110,16 @@ function renderSenderInfoCard(uidList) {
     if (!domCard) {
         return;
     }
+    const uidSet = new Set(uidList);
+    function noPersonMatch(uid) {
+        if (uidSet.size === 1) {
+            domCard.innerHTML += `
+            <h1><br><br><br>匹配不到发送者，可能已经删号也可能是超过10位uid</h1>
+            `;
+        }
+        uidSet.delete(uid);
+    }
+
     let domLoading = document.getElementsByClassName("senderinfo__loading")[0];
     for (let i = 0; i < uidList.length; i++) {
         let uid = uidList[i];
@@ -143,22 +153,25 @@ function renderSenderInfoCard(uidList) {
                 "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/105.0.0.0"
             },
             responseType: "text",
-            onload: function(response) {
+            onload: function (response) {
                 domLoading.style.display = "none";
                 let ret = response.response;
                 let parser = new DOMParser();
                 let doc = parser.parseFromString(ret, "text/html");
-                if (!doc) return;
-                let name = String(getStrMiddle(ret, `content="哔哩哔哩`, "的个人空间"));
-                let headImg = doc.querySelector(".m-space-info").querySelector(".face").querySelector("img");
-                if (!headImg) return;
-                let head = String(headImg.src);
-
+                let name;
+                let headImg;
+                let head;
+                if (doc) {
+                    name = String(getStrMiddle(ret, `content="哔哩哔哩`, "的个人空间"));
+                    headImg = doc.querySelector(".m-space-info")?.querySelector(".face")?.querySelector("img");
+                    head = String(headImg?.src || "");
+                }
+                if (!doc || !headImg || !name || name === "" || name === "false") return noPersonMatch(uid);
                 let sign = String(doc.querySelector(".desc").querySelector(".content").innerHTML);
-                if (!name || name === "" || name === "false") return;
                 let html = `
                     <div class="senderinfo__card">
                         <div class="senderinfo__avatar">
+
                             <a href="https://space.bilibili.com/${uid}" target="_blank"><img src="${head}" /></a>
                         </div>
                         <div class="senderinfo__user">
@@ -166,8 +179,12 @@ function renderSenderInfoCard(uidList) {
                         </div>
                         <div class="senderinfo__sign">${sign}</div>
                     </div>
-                `
+                `;
                 domCard.innerHTML += html;
+            },
+            onerror: function (error) {
+                noPersonMatch(uid);
+                console.log(error);
             }
         });
     }
