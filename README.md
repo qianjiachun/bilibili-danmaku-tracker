@@ -33,6 +33,9 @@
 
 ### 更新内容
 
+### 2025.09.23.01
+1. 【修复】适配了新版弹幕列表UI
+
 ### 2025.03.24.01
 1. 【新增】找不到有效uid时，给出文字提示[#10](https://github.com/qianjiachun/bilibili-danmaku-tracker/pull/10)
 2. 【修复】显示多个相同uid[#10](https://github.com/qianjiachun/bilibili-danmaku-tracker/pull/10)
