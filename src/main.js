@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2025.03.24.01
+// @version      2025.09.23.01
 // @icon         https://static.hdslb.com/mobile/img/512.png
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳

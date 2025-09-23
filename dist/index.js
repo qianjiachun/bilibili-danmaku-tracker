@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2025.03.24.01
+// @version      2025.09.23.01
 // @icon         https://static.hdslb.com/mobile/img/512.png
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳
@@ -274,8 +274,8 @@ function getSelectedDom(path) {
 function showSelectedInfo(dom) {
     let domTime = dom.getElementsByClassName("danmaku-info-time")[0];
     let domContent = dom.getElementsByClassName("danmaku-info-danmaku")[0];
-    let progress = domTime ? domTime.innerText :dom.getElementsByClassName("dm-info-time")[0].innerText;
-    let content = domContent ? domContent.title : dom.getElementsByClassName("dm-info-dm")[0].title;
+    let progress = domTime ? domTime.innerText : dom.getElementsByClassName("dm-info-time")[0].innerText;
+    let content = domContent ? domContent.title : dom.getElementsByClassName("dm-info-dm")[0].title || dom.getElementsByClassName("dm-info-dm")[0].innerText.trim();
     let keyName = `${content}|${toSecond(progress)}`;
     let uidList = [];
     if (keyName in allDanmaku) {
