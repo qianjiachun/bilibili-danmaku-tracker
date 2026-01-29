@@ -147,27 +147,19 @@ function renderSenderInfoCard(uidList) {
         // })
         GM_xmlhttpRequest({
             method: "GET",
-            url: "https://m.bilibili.com/space/" + uid,
+            url: `https://api.bilibili.com/x/web-interface/card?mid=${uid}&photo=true`, 
             headers: {
-                "cookie": document.cookie,
-                "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/105.0.0.0"
+                "cookie": document.cookie, 
+                "referer": "https://www.bilibili.com/"
             },
-            responseType: "text",
+            responseType: "json", 
             onload: function (response) {
                 domLoading.style.display = "none";
                 let ret = response.response;
-                let parser = new DOMParser();
-                let doc = parser.parseFromString(ret, "text/html");
-                let name;
-                let headImg;
-                let head;
-                if (doc) {
-                    name = String(getStrMiddle(ret, `content="哔哩哔哩`, "的个人空间"));
-                    headImg = doc.querySelector(".m-space-info")?.querySelector(".face")?.querySelector("img");
-                    head = String(headImg?.src || "");
-                }
-                if (!doc || !headImg || !name || name === "" || name === "false") return noPersonMatch(uid);
-                let sign = String(doc.querySelector(".desc").querySelector(".content").innerHTML);
+                let card = ret.data.card;
+                let name = card.name;
+                let head = card.face;
+                let sign = card.sign || " ";
                 let html = `
                     <div class="senderinfo__card">
                         <div class="senderinfo__avatar">
