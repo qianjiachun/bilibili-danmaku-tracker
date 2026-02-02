@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2025.09.23.01
+// @version      2026.02.02.01
 // @icon         https://static.hdslb.com/mobile/img/512.png
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳
@@ -60,7 +60,7 @@ message dmItem{
             </div>
         </div>
     </div>
-    `;var n=document.getElementsByClassName("bui-collapse-wrap")[0];n.insertBefore(e,n.childNodes[0]),document.getElementsByClassName("senderinfo__close")[0].addEventListener("click",()=>{e.remove()})}function renderSenderInfoCard(n){let s=document.getElementsByClassName("senderinfo__content")[0];if(s){const t=new Set(n);let o=document.getElementsByClassName("senderinfo__loading")[0];for(let e=0;e<n.length;e++){let r=n[e];GM_xmlhttpRequest({method:"GET",url:"https://m.bilibili.com/space/"+r,headers:{cookie:document.cookie,"user-agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/105.0.0.0"},responseType:"text",onload:function(e){o.style.display="none";var e=e.response,n=(new DOMParser).parseFromString(e,"text/html");let t,i,a;if(n&&(t=String(getStrMiddle(e,'content="哔哩哔哩',"的个人空间")),i=n.querySelector(".m-space-info")?.querySelector(".face")?.querySelector("img"),a=String(i?.src||"")),!n||!i||!t||""===t||"false"===t)return l(r);e=String(n.querySelector(".desc").querySelector(".content").innerHTML),n=`
+    `;var n=document.getElementsByClassName("bui-collapse-wrap")[0];n.insertBefore(e,n.childNodes[0]),document.getElementsByClassName("senderinfo__close")[0].addEventListener("click",()=>{e.remove()})}function renderSenderInfoCard(n){let s=document.getElementsByClassName("senderinfo__content")[0];if(s){const t=new Set(n);let o=document.getElementsByClassName("senderinfo__loading")[0];for(let e=0;e<n.length;e++){let r=n[e];GM_xmlhttpRequest({method:"GET",url:"https://m.bilibili.com/space/"+r,headers:{cookie:document.cookie,"user-agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/105.0.0.0"},responseType:"text",onload:function(e){o.style.display="none";var e=e.response,n=(new DOMParser).parseFromString(e,"text/html");let t,i,a;if(n&&(t=String(getStrMiddle(e,"<title>","的个人空间")),i=n.querySelector(".m-space-info")?.querySelector(".face")?.querySelector("img"),a=String(i?.src||"")),!n||!i||!t||""===t||"false"===t)return l(r);e=String(n.querySelector(".desc").querySelector(".content").innerHTML),n=`
                     <div class="senderinfo__card">
                         <div class="senderinfo__avatar">
 
