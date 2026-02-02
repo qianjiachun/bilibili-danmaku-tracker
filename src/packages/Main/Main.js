@@ -123,43 +123,29 @@ function renderSenderInfoCard(uidList) {
     let domLoading = document.getElementsByClassName("senderinfo__loading")[0];
     for (let i = 0; i < uidList.length; i++) {
         let uid = uidList[i];
-        // fetch(`https://api.bilibili.com/x/space/acc/info?mid=${uid}&token=&platform=web&jsonp=jsonp`)
-        // .then(res => res.json())
-        // .then(ret => {
-        //     const {data} = ret;
-        //     domLoading.style.display = "none";
-        //     let head = data.face;
-        //     let name = data.name;
-        //     let sign = data.sign
-        //     // 此时arr[0]为名字 arr[1]为签名
-        //     let html = `
-        //         <div class="senderinfo__card">
-        //             <div class="senderinfo__avatar">
-        //                 <a href="https://space.bilibili.com/${uid}" target="_blank"><img src="${head}" /></a>
-        //             </div>
-        //             <div class="senderinfo__user">
-        //                 <a href="https://space.bilibili.com/${uid}" target="_blank"><span class="senderinfo__name">${name}</span></a>
-        //             </div>
-        //             <div class="senderinfo__sign">${sign}</div>
-        //         </div>
-        //     `
-        //     domCard.innerHTML += html;
-        // })
         GM_xmlhttpRequest({
             method: "GET",
-            url: `https://api.bilibili.com/x/web-interface/card?mid=${uid}&photo=true`, 
+            url: "https://m.bilibili.com/space/" + uid,
             headers: {
-                "cookie": document.cookie, 
-                "referer": "https://www.bilibili.com/"
+                "cookie": document.cookie,
+                "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/105.0.0.0"
             },
-            responseType: "json", 
+            responseType: "text",
             onload: function (response) {
                 domLoading.style.display = "none";
                 let ret = response.response;
-                let card = ret.data.card;
-                let name = card.name;
-                let head = card.face;
-                let sign = card.sign || " ";
+                let parser = new DOMParser();
+                let doc = parser.parseFromString(ret, "text/html");
+                let name;
+                let headImg;
+                let head;
+                if (doc) {
+                    name = String(getStrMiddle(ret, `<title>`, "的个人空间"));
+                    headImg = doc.querySelector(".m-space-info")?.querySelector(".face")?.querySelector("img");
+                    head = String(headImg?.src || "");
+                }
+                if (!doc || !headImg || !name || name === "" || name === "false") return noPersonMatch(uid);
+                let sign = String(doc.querySelector(".desc").querySelector(".content").innerHTML);
                 let html = `
                     <div class="senderinfo__card">
                         <div class="senderinfo__avatar">
