@@ -130,6 +130,7 @@ function renderSenderInfoCard(uidList) {
                 "cookie": document.cookie,
                 "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/105.0.0.0"
             },
+            anonymous: typeof GM == 'object' && GM?.info?.scriptHandler == 'Violentmonkey', // fix #16
             responseType: "text",
             onload: function (response) {
                 domLoading.style.display = "none";
