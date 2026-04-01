@@ -33,6 +33,9 @@
 
 ### 更新内容
 
+### 2026.04.04.01
+1. 【修复】火狐使用 Violentmonkey 请求触发风控[#17](https://github.com/qianjiachun/bilibili-danmaku-tracker/pull/17)
+
 ### 2026.02.02.01
 1. 【修复】修复了解析用户信息失败的BUG
 

@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2026.02.02.01
+// @version      2026.04.04.01
 // @icon         https://static.hdslb.com/mobile/img/512.png
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳
@@ -345,6 +345,7 @@ function renderSenderInfoCard(uidList) {
                 "cookie": document.cookie,
                 "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/105.0.0.0"
             },
+            anonymous: typeof GM == 'object' && GM?.info?.scriptHandler == 'Violentmonkey', // fix #16
             responseType: "text",
             onload: function (response) {
                 domLoading.style.display = "none";
@@ -389,6 +390,7 @@ function removeSenderInfoWrap() {
         domWrapList[0].remove();
     }
 }
+
 function make_crc32_cracker() {
     var POLY = 0xedb88320;
     var crc32_table = new Uint32Array(256);
