@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Bilibili弹幕查询发送者
 // @namespace    https://github.com/qianjiachun
-// @version      2026.04.04.01
+// @version      2026.07.09.01
 // @icon         https://static.hdslb.com/mobile/img/512.png
 // @description  bilibili（b站/哔哩哔哩）根据弹幕查询发送者信息
 // @author       小淳
@@ -10,6 +10,7 @@
 // @match        *://www.bilibili.com/festival/*
 // @match        *://www.bilibili.com/bangumi/play/*
 // @match        *://www.bilibili.com/cheese/play/*
+// @match        *://www.bilibili.com/list/watchlater*
 // @grant        unsafeWindow
 // @grant        GM_xmlhttpRequest
 // @require      https://lib.baomitu.com/protobufjs/6.11.2/protobuf.min.js

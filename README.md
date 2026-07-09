@@ -33,6 +33,9 @@
 
 ### 更新内容
 
+### 2026.07.09.01
+1. 【修复】修复稍后在看页面不生效的BUG
+
 ### 2026.04.04.01
 1. 【修复】火狐使用 Violentmonkey 请求触发风控[#17](https://github.com/qianjiachun/bilibili-danmaku-tracker/pull/17)
 
